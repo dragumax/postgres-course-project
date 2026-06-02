@@ -1,0 +1,5 @@
+site_name: PostgreSQL Course Project
+nav:
+  - Home: README.md
+  - Architecture: architecture.md
+  - Deployment: deployment.md
