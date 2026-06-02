@@ -1,0 +1,36 @@
+# Secrets – категорически запрещены в Git
+secrets/
+*.pem
+*.key
+*.crt
+.env
+.env.local
+.env.production
+
+# Backups
+backups/
+*.sql
+*.sql.gz
+
+# Docker artefacts
+deploy/.env
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Python, LaTeX (если будут)
+__pycache__/
+*.pyc
+thesis/sources/**/*.pdf
+thesis/*.pdf
+
+# Git
+*.orig
