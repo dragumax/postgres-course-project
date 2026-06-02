@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    restart: unless-stopped
+    user: postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+    secrets:
+      - db_password
+      - db_user
+      - db_name
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_DB_FILE: /run/secrets/db_name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../backups:/backups
+      - ../config/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ../config/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - ../deploy/scripts/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh:ro
+    networks:
+      - backend-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_user) -d $$(cat /run/secrets/db_name)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+    name: postgres_pgdata
+
+secrets:
+  db_password:
+    file: ../secrets/db_password.txt
+  db_user:
+    file: ../secrets/db_user.txt
+  db_name:
+    file: ../secrets/db_name.txt
+
+networks:
+  backend-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.238.0/24
